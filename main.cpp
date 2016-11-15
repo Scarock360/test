@@ -27,13 +27,11 @@ bool up = false;
 bool Left = false;
 bool Right = false;
 high_resolution_clock::time_point t1 = high_resolution_clock::now();
-int delay = 100;
 
 int main(int argc, char* argv[])
 {
 	BuildWindow();
 	int x = 0, k = 0, j = 0, i = 1, s = 90, c = 90, z = 650, g = 480;
-	//bouncer();
 	Gemstone();
 	while (x == 0)
 	{
@@ -54,7 +52,7 @@ static void BuildWindow()
 
 void Render()
 {
-	SDL_Delay(100);
+	SDL_Delay(30);
 	SDL_RenderClear(renderer);
 	SDL_RenderCopy(renderer, sprites[0].tex, &sprites[0].SrcR, &sprites[0].DestR);
 	SDL_RenderPresent(renderer);
@@ -112,9 +110,9 @@ static void ProcessInput(int& x, int& d, int& z, int& g)
 		case SDL_KEYUP:
 			switch (event.key.keysym.sym)
 			{
-			/*case SDLK_UP:
+			case SDLK_UP:
 				up = false;
-				break;*/
+				break;
 			case SDLK_LEFT:
 				Left = false;
 				break;
@@ -134,35 +132,26 @@ static void ProcessInput(int& x, int& d, int& z, int& g)
 
 static void Update(int& j, int& k, int& s, int& c, int& z, int& g, int& x)
 {
-	/*if (sprites[0].DestR.y>480-64|| sprites[0].DestR.y<0)
+	if (sprites[0].DestR.y >= 480 - 64)
 	{
-		x = 1;
-		high_resolution_clock::time_point t2 = high_resolution_clock::now();
-		duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
-		cout << "Game lasted:\t" << time_span.count() << " seconds" << endl;
-		return;
-	}
-	sprites[0].force[1] += sprites[0].mass*-9.81;*/
-	if (sprites[0].DestR.y <= 480- sprites[0].DestR.h)
-	{
-		//sprites[0].DestR.y = 480 - sprites[0].DestR.h;
 		if (up)
 		{
-			sprites[0].force[1] += sprites[0].mass * 10;
-			sprites[0].move[1] = sprites[0].mass * sprites[0].force[1];
-			sprites[0].DestR.y += sprites[0].move[1];
-			up = false;
+			sprites[0].force[1] += sprites[0].mass * 200;
 		}
 	}
 	else
 	{
-		sprites[0].force[1] += sprites[0].mass*-3;
-		sprites[0].move[1] = sprites[0].mass * sprites[0].force[1];
-		sprites[0].DestR.y += sprites[0].move[1];
-		if (sprites[0].DestR.y += sprites[0].move[1] < 480 - sprites[0].DestR.h)
-		{
-			sprites[0].DestR.y = 480 - sprites[0].DestR.h;
-		}
+		sprites[0].force[1] += sprites[0].mass*-9.81;
+	}
+	sprites[0].move[1] = sprites[0].force[1] / sprites[0].mass / 10;
+	if (sprites[0].DestR.y - sprites[0].move[1] >= 480-64)
+	{
+		sprites[0].DestR.y = 480 - 64;
+		sprites[0].force[1] = 0;
+	}
+	else
+	{
+		sprites[0].DestR.y -= sprites[0].move[1];
 	}
 	if (Left)
 	{
@@ -256,4 +245,6 @@ void Gemstone()
 	sprites[0].DestR.h = 64;
 
 	sprites[0].mass = 3;
+	sprites[0].force[1] = 0;
+	sprites[0].move[1] = 0;
 }
